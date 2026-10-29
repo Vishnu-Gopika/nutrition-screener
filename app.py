@@ -45,6 +45,16 @@ html, body, [class*="css"] {font-family: 'Poppins', sans-serif;}
 .orb {position:absolute; width:68px; height:68px; border-radius:50%; border:4px solid #84cc16;
       background:#fff; font-size:2.1rem; display:flex; align-items:center; justify-content:center;
       box-shadow:0 4px 12px rgba(0,0,0,.12);}
+      .plate2 {position:absolute; inset:25px; border-radius:50%; border:10px solid #84cc16; overflow:hidden;
+         display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:4px;
+         background:#ffffff; box-shadow:0 10px 30px rgba(101,163,13,.25);}
+      .slice {display:flex; flex-direction:column; align-items:center; justify-content:center;
+        font-size:2rem; line-height:1.25; text-align:center;}
+      .slice small {font-size:.68rem; font-weight:700; letter-spacing:.06em; margin-top:.25rem;
+              color:#374151 !important; text-transform:uppercase;}
+      .hub {position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px;
+              border-radius:50%; background:#fff; border:5px solid #84cc16; font-size:1.8rem;
+              display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.15);}
 
 /* stats strip */
 .strip {display:flex; justify-content:space-around; gap:1.5rem; flex-wrap:wrap; padding:1.5rem 1rem;
@@ -165,9 +175,16 @@ st.markdown(
     unsafe_allow_html=True)
 
 # ---------- Hero (food-emoji design) ----------
-orbs = [("🥦", 166, -4), ("🥕", 313, 81), ("🍎", 313, 251),
-        ("🥛", 166, 336), ("🥚", 19, 251), ("🍌", 19, 81)]
-orb_html = "".join(f'<div class="orb" style="left:{x}px;top:{y}px;">{e}</div>' for e, x, y in orbs)
+plate_html = (
+    '<div class="plate2">'
+    '<div class="slice" style="background:#dcfce7;">🥦🥕🌽<small>Vegetables</small></div>'
+    '<div class="slice" style="background:#fee2e2;">🍎🍌🍇<small>Fruits</small></div>'
+    '<div class="slice" style="background:#fef9c3;">🍞🍚🌾<small>Grains</small></div>'
+    '<div class="slice" style="background:#ffedd5;">🥚🐟🍗<small>Protein</small></div>'
+    '</div><div class="hub">🍽️</div>'
+    '<div class="orb" style="left:316px;top:300px;">🥛</div>'
+    '<div class="orb" style="left:4px;top:8px;">🍴</div>'
+)
 
 st.markdown(
     '<div id="home"></div><div class="hero-grid"><div>'
@@ -176,7 +193,7 @@ st.markdown(
     '<p>A multi-indicator machine learning tool that looks at age, weight, height and MUAC '
     'together, and compares its answer with the standard WHO MUAC-only rule.</p>'
     '<a class="pill" href="#screener">Try the Screener →</a></div>'
-    '<div class="hero-art"><div class="plate">🥗</div>' + orb_html + '</div></div>',
+    '<div class="hero-art">' + plate_html + '</div></div>',
     unsafe_allow_html=True)
 
 st.markdown(
