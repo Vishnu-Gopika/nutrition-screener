@@ -45,16 +45,30 @@ html, body, [class*="css"] {font-family: 'Poppins', sans-serif;}
 .orb {position:absolute; width:68px; height:68px; border-radius:50%; border:4px solid #84cc16;
       background:#fff; font-size:2.1rem; display:flex; align-items:center; justify-content:center;
       box-shadow:0 4px 12px rgba(0,0,0,.12);}
-      .plate2 {position:absolute; inset:25px; border-radius:50%; border:10px solid #84cc16; overflow:hidden;
+.plate2 {position:absolute; inset:25px; border-radius:50%; border:10px solid #84cc16; overflow:hidden;
          display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:4px;
          background:#ffffff; box-shadow:0 10px 30px rgba(101,163,13,.25);}
-      .slice {display:flex; flex-direction:column; align-items:center; justify-content:center;
+.slice {display:flex; flex-direction:column; align-items:center; justify-content:center;
         font-size:2rem; line-height:1.25; text-align:center;}
-      .slice small {font-size:.68rem; font-weight:700; letter-spacing:.06em; margin-top:.25rem;
+.slice small {font-size:.68rem; font-weight:700; letter-spacing:.06em; margin-top:.25rem;
               color:#374151 !important; text-transform:uppercase;}
-      .hub {position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px;
-              border-radius:50%; background:#fff; border:5px solid #84cc16; font-size:1.8rem;
-              display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.15);}
+.hub {position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px;
+      border-radius:50%; background:#fff; border:5px solid #84cc16; font-size:1.8rem;
+      display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.15);}
+.garden {position:absolute; inset:10px; border-radius:50%; border:10px solid #84cc16; overflow:hidden;
+         background:linear-gradient(180deg,#bae6fd 0%,#e0f2fe 60%,#f0f9ff 100%);
+         box-shadow:0 10px 30px rgba(101,163,13,.25);}
+.sun {position:absolute; top:38px; right:78px; font-size:3rem;}
+.cloud {position:absolute; font-size:2.4rem; opacity:.95;}
+.ground {position:absolute; left:0; right:0; bottom:0; height:105px;
+         background:linear-gradient(180deg,#bef264 0%,#84cc16 100%);}
+.stages {position:absolute; left:0; right:0; bottom:30px; display:flex;
+         justify-content:center; align-items:flex-end; gap:16px;}
+.stage {text-align:center; line-height:1;}
+.stage small {display:block; font-size:.66rem; font-weight:700; margin-top:5px;
+              color:#1f2937 !important; letter-spacing:.04em;}
+.mid {position:absolute; left:0; right:0; top:128px; text-align:center;
+      font-size:.8rem; font-weight:700; letter-spacing:.08em; color:#0369a1 !important;}
 
 /* stats strip */
 .strip {display:flex; justify-content:space-around; gap:1.5rem; flex-wrap:wrap; padding:1.5rem 1rem;
@@ -186,6 +200,27 @@ plate_html = (
     '<div class="orb" style="left:4px;top:8px;">🍴</div>'
 )
 
+growth_html = (
+    '<div class="garden">'
+    '<div class="sun">☀️</div>'
+    '<div class="cloud" style="top:48px;left:60px;">☁️</div>'
+    '<div class="cloud" style="top:110px;right:40px;font-size:1.8rem;">☁️</div>'
+    '<div class="mid">GROWING WELL</div>'
+    '<div class="ground"></div>'
+    '<div class="stages">'
+    '<div class="stage"><span style="font-size:2rem;">🌱</span><small>6 MO</small></div>'
+    '<div class="stage"><span style="font-size:3rem;">🌿</span><small>1 YR</small></div>'
+    '<div class="stage"><span style="font-size:4rem;">🌻</span><small>3 YR</small></div>'
+    '<div class="stage"><span style="font-size:5.2rem;">🌳</span><small>5 YR</small></div>'
+    '</div></div>'
+    '<div class="orb" style="left:318px;top:30px;">🥛</div>'
+    '<div class="orb" style="left:344px;top:150px;">🍎</div>'
+    '<div class="orb" style="left:318px;top:270px;">🥕</div>'
+    '<div class="orb" style="left:4px;top:30px;">🥚</div>'
+    '<div class="orb" style="left:-20px;top:150px;">🍌</div>'
+    '<div class="orb" style="left:4px;top:270px;">🥦</div>'
+)
+
 st.markdown(
     '<div id="home"></div><div class="hero-grid"><div>'
     '<span class="script" style="font-size:1.8rem;">Smarter screening for</span>'
@@ -193,7 +228,7 @@ st.markdown(
     '<p>A multi-indicator machine learning tool that looks at age, weight, height and MUAC '
     'together, and compares its answer with the standard WHO MUAC-only rule.</p>'
     '<a class="pill" href="#screener">Try the Screener →</a></div>'
-    '<div class="hero-art">' + plate_html + '</div></div>',
+    '<div class="hero-art">' + growth_html + '</div></div>',
     unsafe_allow_html=True)
 
 st.markdown(
