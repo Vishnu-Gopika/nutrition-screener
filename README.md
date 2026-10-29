@@ -1,4 +1,4 @@
-# 🥗 NutriScreen: Child Nutritional Status Screener
+# NutriScreen: Child Nutritional Status Screener
 
 **Machine Learning for Anthropometric Data Analysis and Nutritional Status Classification**
 
