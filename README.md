@@ -100,17 +100,9 @@ streamlit run app.py
 - No external validation and no India-specific data.
 - WHO MUAC cut-offs apply to children aged 6 to 59 months, but the dataset includes younger children.
 
-## Future work
-
-- Validate on real, clinically labelled data, ideally from Indian surveys, using WHO z-score classifications as the reference
-- Choose a referral threshold by weighing missed cases against false alarms
-- Pilot the tool with frontline health workers
-- Extend to other indicators such as stunting and underweight
-
 ## Tech stack
 
 Python, pandas, NumPy, scikit-learn, XGBoost, SHAP, Streamlit, Kaggle, GitHub
 
 ---
 
-Academic project, Topic 11: Machine Learning for Anthropometric Data Analysis
