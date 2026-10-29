@@ -1,0 +1,1 @@
+{"features": ["age_months", "weight_kg", "height_cm", "muac_cm"], "classes": ["normal", "moderate", "severe"]}
