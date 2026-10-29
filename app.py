@@ -1,20 +1,10 @@
-import base64
 import json
-import os
 import pandas as pd
 import streamlit as st
 from xgboost import XGBClassifier
 
 st.set_page_config(page_title="NutriScreen | Child Nutrition Screening",
-                   page_icon="🌿", layout="wide")
-
-# ---------- Optional hero photo (add hero.jpg to the repo) ----------
-def hero_visual():
-    if os.path.exists("hero.jpg"):
-        with open("hero.jpg", "rb") as f:
-            b64 = base64.b64encode(f.read()).decode()
-        return f'<img src="data:image/jpeg;base64,{b64}" style="width:100%;height:100%;object-fit:cover;">'
-    return '<span style="font-size:7rem;">👶</span>'
+                   page_icon="🥗", layout="wide")
 
 # ---------- Styling ----------
 st.markdown("""
@@ -23,67 +13,99 @@ st.markdown("""
 html {scroll-behavior: smooth;}
 html, body, [class*="css"] {font-family: 'Poppins', sans-serif;}
 #MainMenu, footer, header {visibility: hidden;}
-.block-container {padding: 0 !important; max-width: 100% !important;}
-.script {font-family: 'Caveat', cursive; color: #65a30d;}
-.topbar {background:#1f2937; color:#fff; text-align:center; font-size:.8rem; padding:.5rem;}
-.nav {display:flex; align-items:center; justify-content:space-between; padding:1rem 2.5rem;
-      background:#fff; border-bottom:1px solid #eef0ec; flex-wrap:wrap; gap:.6rem;}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {background:#ffffff !important;}
+.block-container {max-width: 1180px !important; margin: auto; padding: 1.2rem 2rem 0 2rem !important;}
+.stApp p, .stApp li, .stApp label, .stApp span, .stApp h1, .stApp h2, .stApp h3, .stApp h4 {color:#1f2937;}
+.script {font-family: 'Caveat', cursive; color: #65a30d !important;}
+
+/* nav */
+.nav {display:flex; align-items:center; justify-content:space-between; padding:.9rem 1.6rem;
+      background:#fff; border:1px solid #eef0ec; border-radius:16px; flex-wrap:wrap; gap:.6rem;
+      box-shadow:0 2px 10px rgba(0,0,0,.04);}
 .logo {font-size:1.5rem; font-weight:700; color:#1f2937;}
 .logo b {color:#65a30d;}
-.nav-links a {color:#374151; text-decoration:none; font-weight:500; font-size:.92rem; margin:0 .9rem;}
-.nav-links a:hover {color:#65a30d;}
-.pill {display:inline-block; background:#84cc16; color:#fff !important; font-weight:600;
-       padding:.75rem 1.6rem; border-radius:999px; text-decoration:none; box-shadow:0 4px 0 #65a30d;}
+.nav-links a {color:#374151 !important; text-decoration:none !important; font-weight:500; font-size:.92rem; margin:0 .9rem;}
+.nav-links a:hover {color:#65a30d !important;}
+.pill {display:inline-block; background:#84cc16; color:#ffffff !important; font-weight:600;
+       padding:.75rem 1.6rem; border-radius:999px; text-decoration:none !important; box-shadow:0 4px 0 #65a30d;}
 .pill.small {padding:.45rem 1.2rem; font-size:.85rem; box-shadow:none;}
-.hero-grid {display:grid; grid-template-columns:1.1fr 1fr; gap:2rem; align-items:center;
-            padding:3.5rem 2.5rem; background:linear-gradient(180deg,#f4f5f1 0%,#ffffff 100%);}
-.hero-grid h1 {font-size:2.6rem; line-height:1.15; color:#1f2937; margin:.2rem 0 1rem 0; font-weight:800;}
-.hero-grid .script-big {font-family:'Caveat',cursive; color:#65a30d; font-size:3.8rem; display:block; line-height:1;}
-.hero-grid p {color:#4b5563; font-size:1.05rem; max-width:520px; margin-bottom:1.6rem;}
-.hero-art {position:relative; width:380px; height:380px; margin:auto;}
-.hero-circle {position:absolute; inset:15px; border-radius:50%; border:10px solid #84cc16;
-              background:#ecfccb; display:flex; align-items:center; justify-content:center; overflow:hidden;}
-.orb {position:absolute; width:92px; height:92px; border-radius:50%; border:5px solid #84cc16;
-      background:#fff; font-size:2.6rem; display:flex; align-items:center; justify-content:center;
+
+/* hero */
+.hero-grid {display:grid; grid-template-columns:1.1fr 1fr; gap:1.5rem; align-items:center;
+            padding:3rem 2.5rem; margin-top:1.2rem; border-radius:24px;
+            background:linear-gradient(135deg,#f4f8ec 0%,#ffffff 100%); border:1px solid #eef0ec;}
+.hero-grid h1 {font-size:2.5rem; line-height:1.15; color:#1f2937; margin:.2rem 0 1rem 0; font-weight:800;}
+.hero-grid .script-big {font-family:'Caveat',cursive; color:#65a30d !important; font-size:3.8rem; display:block; line-height:1;}
+.hero-grid p {color:#4b5563; font-size:1.02rem; max-width:500px; margin-bottom:1.6rem;}
+.hero-art {position:relative; width:400px; height:400px; margin:auto;}
+.plate {position:absolute; inset:60px; border-radius:50%; border:10px solid #84cc16;
+        background:radial-gradient(circle,#ffffff 0%,#ecfccb 100%);
+        display:flex; align-items:center; justify-content:center; font-size:7rem;
+        box-shadow:0 10px 30px rgba(101,163,13,.25);}
+.orb {position:absolute; width:68px; height:68px; border-radius:50%; border:4px solid #84cc16;
+      background:#fff; font-size:2.1rem; display:flex; align-items:center; justify-content:center;
       box-shadow:0 4px 12px rgba(0,0,0,.12);}
-.tape {position:absolute; bottom:6px; left:-20px; right:-20px; height:26px; border-radius:4px;
-       background:repeating-linear-gradient(90deg,#facc15 0 18px,#eab308 18px 20px); transform:rotate(-6deg);
-       box-shadow:0 3px 8px rgba(0,0,0,.18);}
-.strip {display:flex; justify-content:center; gap:3rem; flex-wrap:wrap; padding:1.6rem 1rem; background:#84cc16; color:#fff;}
-.strip div {text-align:center;} .strip b {display:block; font-size:1.8rem;} .strip span {font-size:.85rem; opacity:.95;}
-.section {padding:3.5rem 2.5rem 1rem 2.5rem; max-width:1150px; margin:auto;}
-.section-title {text-align:center; margin-bottom:2rem;}
+
+/* stats strip */
+.strip {display:flex; justify-content:space-around; gap:1.5rem; flex-wrap:wrap; padding:1.5rem 1rem;
+        background:#84cc16; border-radius:20px; margin-top:1.2rem;}
+.strip div {text-align:center;}
+.strip b, .strip span {color:#ffffff !important;}
+.strip b {display:block; font-size:1.8rem;} .strip span {font-size:.85rem;}
+
+/* sections */
+.section-title {text-align:center; margin:3.5rem 0 1.8rem 0;}
 .section-title .script {font-size:2rem; display:block; line-height:1;}
 .section-title h2 {font-size:2.1rem; color:#1f2937; margin:.2rem 0 .6rem 0; font-weight:700;}
 .section-title p {color:#6b7280; max-width:640px; margin:auto;}
-.feature {text-align:center; padding:1rem;}
-.feature .heart {font-size:2rem;} .feature h4 {margin:.4rem 0; color:#1f2937;}
+.feature {text-align:center; padding:1.2rem; background:#f7fee7; border-radius:18px; height:100%;}
+.feature .heart {font-size:2.2rem;} .feature h4 {margin:.4rem 0; color:#1f2937;}
 .feature p {color:#6b7280; font-size:.93rem; margin:0;}
-.res {border-radius:16px; padding:1.1rem 1.2rem; color:#fff;}
+
+/* results */
+.res {border-radius:16px; padding:1.1rem 1.2rem;}
+.res small, .res h2, .res span {color:#ffffff !important;}
 .res small {opacity:.92; font-size:.75rem; letter-spacing:.06em;}
-.res h2 {color:#fff; margin:.15rem 0 .1rem 0; font-size:1.9rem; font-weight:800;}
+.res h2 {margin:.15rem 0 .1rem 0; font-size:1.9rem; font-weight:800;}
 .res span {font-size:.82rem; opacity:.95;}
 .normal {background:#16a34a;} .moderate {background:#d97706;} .severe {background:#dc2626;}
 .gauge {background:#e5e7eb; border-radius:999px; height:16px; overflow:hidden; margin:.4rem 0;}
 .gauge div {height:100%; border-radius:999px;}
 .alert {border-left:5px solid; border-radius:8px; padding:.7rem 1rem; margin:.5rem 0; font-size:.92rem;}
-.alert.red {background:#fef2f2; border-color:#dc2626; color:#7f1d1d;}
-.alert.amber {background:#fffbeb; border-color:#d97706; color:#78350f;}
-.alert.blue {background:#eff6ff; border-color:#2563eb; color:#1e3a8a;}
+.alert.red {background:#fef2f2; border-color:#dc2626;} .alert.red, .alert.red b {color:#7f1d1d !important;}
+.alert.amber {background:#fffbeb; border-color:#d97706;} .alert.amber, .alert.amber b {color:#78350f !important;}
+.alert.blue {background:#eff6ff; border-color:#2563eb;} .alert.blue, .alert.blue b {color:#1e3a8a !important;}
 .placeholder {background:#f7fee7; border:2px dashed #bef264; border-radius:16px;
-              padding:2.5rem 1.5rem; text-align:center; color:#4d7c0f;}
+              padding:2.5rem 1.5rem; text-align:center;}
+.placeholder h3, .placeholder p {color:#4d7c0f !important;}
+
+/* cards and custom bar charts */
 .card {background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:1.3rem; height:100%;
        box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.card h4 {margin:0 0 .3rem 0; color:#1f2937;} .card p {margin:0; color:#6b7280; font-size:.93rem;}
-.footer {background:#1f2937; color:#9ca3af; text-align:center; font-size:.82rem; padding:1.6rem; margin-top:3rem;}
+.card h4 {margin:0 0 .8rem 0; color:#1f2937;} .card p {margin:0; color:#6b7280; font-size:.93rem;}
+.brow {display:flex; align-items:center; gap:.7rem; margin:.45rem 0;}
+.blabel {width:112px; font-size:.85rem; color:#374151; flex-shrink:0;}
+.btrack {flex:1; background:#f1f5f0; border-radius:999px; height:18px; overflow:hidden;}
+.bfill {height:100%; border-radius:999px;}
+.bval {width:52px; font-size:.85rem; font-weight:600; color:#1f2937; text-align:right;}
+.grp {margin-bottom:.9rem;} .grp b {font-size:.9rem; color:#1f2937;}
+
+/* streamlit widgets */
 div[data-testid="stForm"] {border:1px solid #e5e7eb; border-radius:16px; padding:1.2rem; background:#fff;}
 button[kind="primaryFormSubmit"], button[kind="primary"] {border-radius:999px !important; font-weight:600;}
-.pad {padding:0 2.5rem; max-width:1150px; margin:auto;}
+[data-testid="stMetricValue"], [data-testid="stMetricLabel"] {color:#1f2937 !important;}
+.stApp table, .stApp th, .stApp td {color:#1f2937 !important; background:#ffffff !important;}
+.stApp input {background:#ffffff !important; color:#1f2937 !important;}
+
+.footer {background:#1f2937; text-align:center; font-size:.82rem; padding:1.6rem; margin:3rem 0 1.2rem 0; border-radius:20px;}
+.footer, .footer span {color:#d1d5db !important;}
+
 @media (max-width: 850px) {
-  .hero-grid {grid-template-columns:1fr; padding:2rem 1.2rem;}
-  .hero-grid h1 {font-size:2rem;} .nav {padding:1rem;} .nav-links {display:none;}
-  .section, .pad {padding-left:1rem; padding-right:1rem;}
-  .hero-art {width:300px; height:300px;}
+  .block-container {padding: 1rem 1rem 0 1rem !important;}
+  .hero-grid {grid-template-columns:1fr; padding:1.6rem 1.2rem;}
+  .hero-grid h1 {font-size:2rem;} .nav-links {display:none;}
+  .hero-art {transform:scale(.72); margin:-55px auto;}
+  .blabel {width:90px;}
 }
 </style>
 """, unsafe_allow_html=True)
@@ -111,6 +133,7 @@ def who_classify(muac):
         return "moderate"
     return "severe"
 
+# ---------- Helpers ----------
 def result_card(title, status, note):
     return (f'<div class="res {status}"><small>{title}</small>'
             f'<h2>{status.upper()}</h2><span>{note}</span></div>')
@@ -122,16 +145,30 @@ def section_title(script, title, sub=""):
     st.markdown(f'<div class="section-title"><span class="script">{script}</span>'
                 f'<h2>{title}</h2><p>{sub}</p></div>', unsafe_allow_html=True)
 
-# ---------- Top bar + navigation ----------
+def bars(rows, maxv):
+    """rows: list of (label, value, colour, text)."""
+    out = ""
+    for label, v, colour, text in rows:
+        out += (f'<div class="brow"><div class="blabel">{label}</div>'
+                f'<div class="btrack"><div class="bfill" style="width:{min(v / maxv * 100, 100):.1f}%;'
+                f'background:{colour}"></div></div><div class="bval">{text}</div></div>')
+    return out
+
+GREEN, LIGHT, GREY = "#65a30d", "#bef264", "#9ca3af"
+
+# ---------- Navigation ----------
 st.markdown(
-    '<div class="topbar">Academic prototype · MIECRC framework · Not a medical device</div>'
-    '<div class="nav"><div class="logo">🌿 Nutri<b>Screen</b></div>'
+    '<div class="nav"><div class="logo">🥗 Nutri<b>Screen</b></div>'
     '<div class="nav-links"><a href="#home">Home</a><a href="#screener">Screener</a>'
     '<a href="#results">Results</a><a href="#how">How it works</a><a href="#limits">Limitations</a></div>'
     '<a class="pill small" href="#screener">Try it now</a></div>',
     unsafe_allow_html=True)
 
-# ---------- Hero ----------
+# ---------- Hero (food-emoji design) ----------
+orbs = [("🥦", 166, -4), ("🥕", 313, 81), ("🍎", 313, 251),
+        ("🥛", 166, 336), ("🥚", 19, 251), ("🍌", 19, 81)]
+orb_html = "".join(f'<div class="orb" style="left:{x}px;top:{y}px;">{e}</div>' for e, x, y in orbs)
+
 st.markdown(
     '<div id="home"></div><div class="hero-grid"><div>'
     '<span class="script" style="font-size:1.8rem;">Smarter screening for</span>'
@@ -139,11 +176,7 @@ st.markdown(
     '<p>A multi-indicator machine learning tool that looks at age, weight, height and MUAC '
     'together, and compares its answer with the standard WHO MUAC-only rule.</p>'
     '<a class="pill" href="#screener">Try the Screener →</a></div>'
-    '<div class="hero-art"><div class="hero-circle">' + hero_visual() + '</div>'
-    '<div class="orb" style="top:0;right:-10px;">🥦</div>'
-    '<div class="orb" style="top:130px;right:-40px;">🍎</div>'
-    '<div class="orb" style="top:250px;right:-10px;">🥛</div>'
-    '<div class="tape"></div></div></div>',
+    '<div class="hero-art"><div class="plate">🥗</div>' + orb_html + '</div></div>',
     unsafe_allow_html=True)
 
 st.markdown(
@@ -154,27 +187,24 @@ st.markdown(
     unsafe_allow_html=True)
 
 # ---------- Story ----------
-st.markdown('<div class="section">', unsafe_allow_html=True)
 section_title("our story", "Why one measurement is not enough",
               "The WHO rule uses only mid-upper arm circumference. In our test set it missed "
               "105 at-risk children whose arm measurement looked normal.")
 f1, f2, f3 = st.columns(3, gap="large")
-f1.markdown('<div class="feature"><div class="heart">💚</div><h4>Multi-indicator</h4>'
+f1.markdown('<div class="feature"><div class="heart">🥕</div><h4>Multi-indicator</h4>'
             '<p>Combines age, weight, height and MUAC instead of relying on one number.</p></div>',
             unsafe_allow_html=True)
-f2.markdown('<div class="feature"><div class="heart">💚</div><h4>Explainable</h4>'
+f2.markdown('<div class="feature"><div class="heart">🍎</div><h4>Explainable</h4>'
             '<p>SHAP analysis shows which measurements drive each classification.</p></div>',
             unsafe_allow_html=True)
-f3.markdown('<div class="feature"><div class="heart">💚</div><h4>Safe errors</h4>'
+f3.markdown('<div class="feature"><div class="heart">🥛</div><h4>Safe errors</h4>'
             '<p>No severe child was classified as normal in the held-out test set.</p></div>',
             unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Screener ----------
-st.markdown('<div id="screener"></div><div class="section">', unsafe_allow_html=True)
+st.markdown('<div id="screener"></div>', unsafe_allow_html=True)
 section_title("try it yourself", "Child Nutritional Status Screener",
               "Enter the four measurements and compare both methods side by side.")
-st.markdown('</div><div class="pad">', unsafe_allow_html=True)
 
 left, right = st.columns([1, 1.25], gap="large")
 with left:
@@ -218,7 +248,12 @@ with right:
             '<span style="color:#6b7280;font-size:.8rem">Risk score = model probability that the '
             'child is moderate or severe. Not clinically validated.</span></div>',
             unsafe_allow_html=True)
-        st.bar_chart(pd.DataFrame({"Probability (%)": proba * 100}, index=CLASSES), height=170)
+
+        pc = {"normal": "#16a34a", "moderate": "#d97706", "severe": "#dc2626"}
+        st.markdown('<div class="card" style="margin-top:.8rem"><h4>Probability of each class</h4>'
+                    + bars([(c.capitalize(), float(p), pc[c], f"{p*100:.0f}%")
+                            for c, p in zip(CLASSES, proba)], 1.0) + '</div>',
+                    unsafe_allow_html=True)
 
         if ml_status != "normal" and who_status == "normal":
             alert("red", "<b>Possible hidden case.</b> MUAC looks normal, but the other "
@@ -236,10 +271,9 @@ with right:
         if out:
             alert("amber", "Outside the training range, so the result may be unreliable: "
                   + ", ".join(out))
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- Results ----------
-st.markdown('<div id="results"></div><div class="section">', unsafe_allow_html=True)
+st.markdown('<div id="results"></div>', unsafe_allow_html=True)
 section_title("the evidence", "Model performance",
               "Held-out test set of 1,000 children (710 normal, 220 moderate, 70 severe).")
 k1, k2, k3, k4 = st.columns(4)
@@ -247,26 +281,33 @@ k1.metric("Macro-F1", "0.892", "+0.259 vs WHO")
 k2.metric("Severe recall", "82.9%", "+57.2 pts vs WHO")
 k3.metric("Screening sensitivity", "96.9%", "+33.1 pts vs WHO")
 k4.metric("Hidden cases found", "96 of 105", "WHO finds 0")
-st.markdown('&nbsp;', unsafe_allow_html=True)
+st.markdown("&nbsp;", unsafe_allow_html=True)
+
 c1, c2 = st.columns(2, gap="large")
-with c1:
-    st.markdown("**Macro-F1 by method**")
-    st.bar_chart(pd.DataFrame({"Macro-F1": [0.633, 0.782, 0.869, 0.892]},
-                 index=["WHO rule", "Decision Tree", "Random Forest", "XGBoost"]), height=280)
-with c2:
-    st.markdown("**Recall per class: WHO vs XGBoost (%)**")
-    st.bar_chart(pd.DataFrame({"WHO rule": [99.9, 50.9, 25.7], "XGBoost": [97.7, 89.1, 82.9]},
-                 index=["Normal", "Moderate", "Severe"]), height=280)
+c1.markdown('<div class="card"><h4>Macro-F1 by method</h4>' + bars([
+    ("XGBoost", 0.892, GREEN, "0.892"),
+    ("Random Forest", 0.869, "#84cc16", "0.869"),
+    ("Decision Tree", 0.782, LIGHT, "0.782"),
+    ("WHO rule", 0.633, GREY, "0.633")], 1.0) + '</div>', unsafe_allow_html=True)
+
+recall_html = ""
+for cls, who_v, ml_v in [("Normal", 99.9, 97.7), ("Moderate", 50.9, 89.1), ("Severe", 25.7, 82.9)]:
+    recall_html += (f'<div class="grp"><b>{cls}</b>' +
+                    bars([("WHO rule", who_v, GREY, f"{who_v:.1f}%"),
+                          ("XGBoost", ml_v, GREEN, f"{ml_v:.1f}%")], 100) + '</div>')
+c2.markdown('<div class="card"><h4>Recall per class: WHO vs XGBoost</h4>' + recall_html + '</div>',
+            unsafe_allow_html=True)
+
+st.markdown("&nbsp;", unsafe_allow_html=True)
 st.table(pd.DataFrame({
     "Method": ["XGBoost (selected)", "Random Forest", "Decision Tree", "WHO MUAC rule"],
     "Accuracy": ["94.8%", "93.9%", "88.8%", "83.9%"],
-    "Macro-F1": [0.892, 0.869, 0.782, 0.633],
+    "Macro-F1": ["0.892", "0.869", "0.782", "0.633"],
     "Moderate recall": ["89.1%", "86.4%", "71.4%", "50.9%"],
     "Severe recall": ["82.9%", "77.1%", "80.0%", "25.7%"]}).set_index("Method"))
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------- How it works ----------
-st.markdown('<div id="how"></div><div class="section">', unsafe_allow_html=True)
+st.markdown('<div id="how"></div>', unsafe_allow_html=True)
 section_title("behind the scenes", "How it works")
 h1, h2, h3 = st.columns(3, gap="medium")
 h1.markdown('<div class="card"><h4>1 · WHO MUAC rule</h4><p>Looks at MUAC only: ≥ 12.5 cm normal, '
@@ -278,14 +319,16 @@ h2.markdown('<div class="card"><h4>2 · ML model</h4><p>XGBoost trained on age, 
 h3.markdown('<div class="card"><h4>3 · Confidence and risk</h4><p>The model gives a probability for '
             'each class. The highest is the confidence, and moderate plus severe forms the risk '
             'score. Low confidence triggers a referral warning.</p></div>', unsafe_allow_html=True)
-st.markdown('&nbsp;', unsafe_allow_html=True)
-st.markdown("**What drives the model (SHAP, overall importance)**")
-st.bar_chart(pd.DataFrame({"Importance": [7.23, 5.86, 4.53, 2.07]},
-             index=["MUAC", "Weight", "Age", "Height"]), height=240)
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("&nbsp;", unsafe_allow_html=True)
+st.markdown('<div class="card"><h4>What drives the model (SHAP, overall importance)</h4>' + bars([
+    ("MUAC", 7.23, GREEN, "7.23"), ("Weight", 5.86, "#84cc16", "5.86"),
+    ("Age", 4.53, LIGHT, "4.53"), ("Height", 2.07, GREY, "2.07")], 7.5) +
+    '<p style="margin-top:.8rem">Age matters through context: a given weight or height is more or '
+    'less concerning depending on age. Height ranks last partly because it is highly correlated '
+    'with age and weight.</p></div>', unsafe_allow_html=True)
 
 # ---------- Limitations ----------
-st.markdown('<div id="limits"></div><div class="section">', unsafe_allow_html=True)
+st.markdown('<div id="limits"></div>', unsafe_allow_html=True)
 section_title("please read", "Limitations")
 st.markdown("""
 - **Synthetic-looking dataset.** Some features are floored (weight at 3.0 kg for 32% of children) and class proportions are exactly 71 / 22 / 7.
@@ -295,7 +338,8 @@ st.markdown("""
 - **Trade-off.** 16 healthy children flagged versus 1 for the WHO rule, in exchange for 96 hidden at-risk cases found.
 - **Not a medical device.** Research prototype for decision support only.
 """)
-st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="footer">🌿 NutriScreen · MIECRC prototype · Topic 11: Machine Learning '
-            'for Anthropometric Data Analysis · Academic use only</div>', unsafe_allow_html=True)
+# ---------- Footer ----------
+st.markdown('<div class="footer">🥗 NutriScreen · Academic prototype · MIECRC framework · '
+            'Not a medical device<br><span>Topic 11: Machine Learning for Anthropometric Data '
+            'Analysis</span></div>', unsafe_allow_html=True)
